@@ -60,6 +60,8 @@ public:
      returned in the second argument. Otherwise they return false.
   */
   //@{
+  //
+    int readParametersFromFile(const char * const filename);
     // Set an integer parameter
     bool setIntParam(OsiIntParam key, int value);
     // Set an double parameter
@@ -76,6 +78,9 @@ public:
     void setMipStart(bool value) { domipstart = value; }
     // Get mipstart option value
     bool getMipStart() const { return domipstart; }
+
+    bool getSolvingMIQP(){return solvingMIQP_;}
+    void setSolvingMIQP(bool miqp){solvingMIQP_=miqp;}
   //@}
 
   //---------------------------------------------------------------------------
@@ -311,6 +316,7 @@ public:
       virtual void setObjCoeffSet(const int* indexFirst,
 				  const int* indexLast,
 				  const double* coeffList);
+      void setSeparableQuadraticObjectiveCoefficients(double* diagonalElements);
 
       using OsiSolverInterface::setColLower ;
       /** Set a single column lower bound<br>
@@ -588,6 +594,9 @@ public:
 	If objSense is non zero then -1.0 forces the code to write a
 	maximization objective and +1.0 to write a minimization one.
 	If 0.0 then solver can do what it wants */
+    virtual void writeLP(const char *filename,
+			  const char *extension = "lp",
+                          double objSense=0.0) const;
     virtual void writeMps(const char *filename,
 			  const char *extension = "mps",
                           double objSense=0.0) const;
@@ -751,12 +760,6 @@ public:
 
 protected:
   
-  /// Get LP Pointer for const methods
-  CPXLPptr getMutableLpPtr() const;
-
-  /// Get Environment Pointer for const methods
-  CPXENVptr getMutableEnvironmentPtr() const;
-
   /**@name Protected methods */
   //@{
   /// Apply a row cut. Return true if cut was applied.
@@ -781,7 +784,10 @@ private:
   
   /**@name Private methods */
   //@{
-    
+  
+  /// Get LP Pointer for const methods
+  CPXLPptr getMutableLpPtr() const;
+  
   /// The real work of a copy constructor (used by copy and assignment)
   void gutsOfCopy( const OsiCpxSolverInterface & source );
   
@@ -880,7 +886,11 @@ private:
   int             coltypesize_;
   
   /// Stores whether CPLEX' prob type is currently set to MIP
+  //Note: This parameter is general enough to subsume QMIP, no need for a separate probtypeqmip_;
   mutable bool    probtypemip_;
+
+  bool solvingMIQP_;
+  double *sepDiagQuadraticCoefficients_;
 
   /// Whether to pass a column solution to CPLEX before starting MIP solve (copymipstart)
   bool            domipstart;
