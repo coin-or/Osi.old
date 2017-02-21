@@ -39,8 +39,21 @@ enum OsiIntParam {
 	 supplied by the client. Requests for a vector of names return a
 	 vector sized to match the constraint system, and all entries will
 	 contain either the name specified by the client or a generated name.
+
   */
   OsiNameDiscipline,
+  /*OsiParallelThreads: Set number of threads to be used: 0 means use number of CPU cores, while number > 0 tells CPLEX to use this number of threads explicitly*/
+  OsiParallelThreads,
+  /*Set parallel mode: -1 parallel opportunistic, 0 parallel auto (solver chooses, this is default), 1 parallel deterministic*/
+  OsiParallelMode,
+  /*Determines amount of output to stdout: 0 off, 1 on*/
+  OsiOutputControl,
+  /*Determines amount of output to stdout for MIP solver: 0 only when finished, 1, display feas int sols, 2, more display, etc., to 5*/
+  OsiMIPOutputControl,
+  /*For nonlinear problem, set target solution type, 0 auto, 1 global for convex problem, 2 local (satifying first order), 3 global*/
+  OsiSolutionTarget,
+  /*Set MIP solver heuristic paramter, -1 turn off, 0 let solver decide (default), > 0 periodic freq*/
+  OsiHeurFreq,
   /*! \brief End marker.
   
     Used by OsiSolverInterface to allocate a fixed-sized array to store
